@@ -1,19 +1,4 @@
-/* Filename:  hash.cpp
-
-   Programmer:  Br. David Carlson
-
-   Date:  November 10, 1997
-
-   Modified:  November 16, 1997
-      Added debugging output messsages.
-      Changed the Empty algorithm so that it is faster.
-   Modified:  May 23, 1999
-      Changed to use bool, reinterpret_cast.  Also char * for Error parameter.
-   Modified:  July 16, 2000
-      Changed to use modern headers.
-   Modified:  March 4, 2001
-      Changed to use const functions whenever possible.
-
+/*
    This file implements the functions for HashTableClass, as shown in
    hash.h.  This class creates a file-based table by using a hash table.
 */
