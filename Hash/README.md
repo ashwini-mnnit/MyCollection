@@ -1,4 +1,0 @@
-MyCollection
-============
-
-Some Sample Code 
