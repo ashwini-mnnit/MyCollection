@@ -6,6 +6,8 @@
 #include "hash.h"
 
 
+
+
 /* Given:  msg    A message.
    Task:   Display msg and exit the program.
    Return: Nothing to the program, but does return an error code of 1 to
