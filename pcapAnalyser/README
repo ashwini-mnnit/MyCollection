@@ -1,0 +1,155 @@
+Author: Ashwini Singh
+UIN: 522006254
+email: ashwini.singh@tamu.edu
+Homework 1: 
+Date: 08 Sep, 2013
+
+List of Files:
+**************************************************************************
+		pcapAnalyser.cpp
+		packetHandler.cpp
+		packetHandler.h
+		pcapAnalyser (This is the binary file of the program)
+		pcapAnalyser.o
+		packethandler.o
+		test/ (This is the directory contains the pcap files)
+		README
+
+Input: 
+*********************************************************************************************
+	--On command line argument, provide the list of pcap files.
+		./pcapAnalyser <list of pcap files> 
+			Example: ./pcap_analyser tests/httpsession.pcap tests/tfsession.pcap
+	
+
+Output:
+**********************************************************************************************************************
+	-- On console , the Summary report contains the details about each protocol (HTTP/FTP/TELNET)
+	-- Each protocol detail contains number of sessions.
+	-- Each Session contains the details of request count, response count , retransmission count and output file.
+		--**Output file provides the details of data exchanged.
+
+	Output Format:
+        __________________
+
+		********************************************************************************************************
+                ************************************ Summary Report ****************************************************
+                ********************************************************************************************************
+
+
+                Overall Summary :
+                         Number of Invalid IP header      : <number> (This is based on IP header Length . Valid IP header length for a packet is > 20 )
+                         Number of Invalid TCP header     : <number> (This is based on TCP header Length . Valid TCP header length for a packet is > 20)   
+                         Number of Non TCP  Packet        : <number> (This is based on the protocol field of IP header.)
+                ##################################### HTTP statistics ################################
+                               Number of HTTP Sessions :<number>
+
+                Session :<number>
+                     Request Count           :<number>
+                     Response Count          :<nymber>
+                     ReTransmission Count    :<number>
+                     Output Fileneme         :<Name of output file>
+                #######################################################################################
+
+
+                ############################### FTP statistics ########################################
+                               Number of FTP Sessions :1
+
+                 Session :<number>
+                     Request Count           :<number>
+                     Response Count          :<nymber>
+                     ReTransmission Count    :<number>
+                     Output Fileneme         :<Name of output file>
+
+                #######################################################################################
+
+
+                ################################### Telnet statistics ################################
+                               Number of Telnet Sessions :1
+                 Session :<number>
+                     Request Count           :<number>
+                     Response Count          :<nymber>
+                     ReTransmission Count    :<number>
+                     Output Fileneme         :<Name of output file>
+                
+                #######################################################################################
+	
+        
+	Sample Output:
+        _____________________
+
+		********************************************************************************************************
+		************************************ Summary Report ****************************************************
+		********************************************************************************************************
+
+
+		Overall Summary : 
+                	 Number of Invalid IP header      : 0
+                 	 Numbet of Invalid TCP header     : 0
+                	 Numbet of Non TCP  Packet        : 2
+		##################################### HTTP statistics ################################
+		               Number of HTTP Sessions :2
+
+		Session :1
+		     Request Count           :1
+		     Response Count          :14
+		     ReTransmission Count    :0
+		     Output Fileneme         :output_http_1.txt
+		Session :2
+		     Request Count           :1
+		     Response Count          :3
+		     ReTransmission Count    :1
+		     Output Fileneme         :output_http_2.txt
+		#######################################################################################
+
+
+		############################### FTP statistics ########################################
+		               Number of FTP Sessions :1
+
+		Session :1
+		     Request Count           :20
+		     Response Count          :27
+		     ReTransmission Count    :0
+		     Output Fileneme         :output_ftp_1.txt
+		#######################################################################################
+
+
+		################################### Telnet statistics ################################
+		               Number of Telnet Sessions :1
+
+		Session :1
+		     Request Count           :123
+		     Response Count          :270
+		     ReTransmission Count    :0
+		     Output Fileneme         :output_telnet_1.txt
+		#######################################################################################
+
+
+
+
+
+Detailed Design :
+**************************************************************************
+	Using the lippcap, we can parse the pcap file to get the content packet by packet. For each packet, we strip off 
+	the ethernet header, IP header and TCP header to get the payload. TCP header provides the protocol information
+	(HTTP/FTP/TELNET) based on the source and destination port. For each protocol maintain the list of packet( used 
+	PacketRecord struct and list of PacketRecord for each protocol). Now process protocol lists.
+		
+        For HTTP, loop through the HTTP packet list. For each request packet (destination port = 80 , source port = x) extract 
+	all response (destination port = x , source port = 80) and put them in a temporary list(called response list).Sort 
+	the response list based on sequence number. Combine the payload of each response. Now we have a session of HTTP with 
+	Request and Response.
+
+	For FTP, extract packet request/response (Request : source port = x , dest port = 21   and  Response: source port = 21 
+	, dest port = x) from the FTP packet list in a temporary list. This gives the list of Request/Response for a particular
+	 session. Put all request and response of this session in a output file.
+	
+	For Telnet, I have used the same approach as FTP using the TELNET port 23.
+
+
+
+Experiance and Lessons Learned
+*************************************************************************************************
+	--In depth understanding of network packets.
+	--Detailed analysis of TELNET packet. I did not know that each request contains only one character in a Telnet packet.
+
