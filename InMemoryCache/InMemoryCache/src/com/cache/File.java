@@ -6,17 +6,24 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.time.Instant;
+import java.util.Date;
 
 public class File {
+	private final int id;
 	private Boolean isPinned;
 	private String filename;
 	private ByteBuffer filebytes;
 	private Boolean isDirty;
+	private Date createTime;
+	private Date lastModifiedTime;
 
 	public File(String filename) {
 		this.isPinned = false;
 		this.filename = filename;
 		this.filebytes = null;
+		this.createTime= new Date(); 
+		this.lastModifiedTime= new Date();
 	}
 
 	public void readContent() throws FileTooBigException, IOException {
@@ -96,6 +103,22 @@ public class File {
 
 	public void setIsDirty(Boolean isDirty) {
 		this.isDirty = isDirty;
+	}
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public Date getLastModifiedTime() {
+		return lastModifiedTime;
+	}
+
+	public void setLastModifiedTime(Date lastModifiedTime) {
+		this.lastModifiedTime = lastModifiedTime;
 	}
 
 }

@@ -8,8 +8,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class FileCacheImpl extends FileCache {
-	public static final int MAX_FILE_SIZE = 10240;
-	public static final int CACHE_SIZE = 100;
+	public static final int MAX_FILE_SIZE = 10240; //in KB
+	public static final int CACHE_SIZE = 100; // Number of files.
 	private Map<String, File> fileMap = new HashMap<String, File>();
 
 	protected FileCacheImpl(int maxCacheEntries) {
