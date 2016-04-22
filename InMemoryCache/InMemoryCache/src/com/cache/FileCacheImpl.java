@@ -2,15 +2,17 @@ package com.cache;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 //TODO: Add logger
 public class FileCacheImpl extends FileCache {
+	private Logger log = Utils.GetLogger(File.class.getName());
 	public static final int MAX_FILE_SIZE = 10240; // in KB
-	public static final int CACHE_SIZE = 100; // Number of files.
 	private Map<String, File> fileMap = new HashMap<String, File>();
 
 	protected FileCacheImpl(int maxCacheEntries) {
@@ -18,29 +20,69 @@ public class FileCacheImpl extends FileCache {
 	}
 
 	@Override
-	void pinFiles(Collection<String> fileNames) {
+	void pinFiles(Collection<String> fileNames) throws IOException, InMemoryCacheException {
 		for (Iterator<String> it = fileNames.iterator(); it.hasNext();) {
 			String filename = (String) it.next();
-			if (fileMap.containsKey(filename)) {
-				fileMap.get(filename).setIsPinned(true);
-			} else {
-				// TODO: Implement LRU here
-				File file = new File(filename);
-				try {
-					file.readContent();
-				} catch (FileTooBigException e) {
-
-					e.printStackTrace();
-				} catch (IOException e) {
-
-					e.printStackTrace();
-				}
-				file.setIsPinned(true);
-				fileMap.put(filename, file);
+			if (!fileMap.containsKey(filename)) {
+				log.info("[Cache Miss]File " + filename + " is not in cache. Adding the file to cache.");
+				AddFileToCache(filename);
 			}
+			fileMap.get(filename).setIsPinned(true);
+		}
+	}
 
+	private void RemoveFileFromCache(String filename) {
+		// flush content and Remove
+		fileMap.get(filename).flushContent();
+		fileMap.remove(filename);
+	}
+
+	private void AddFileToCache(String filename) throws IOException, InMemoryCacheException {
+
+		if (fileMap.size() >= this.maxCacheEntries) {
+			String lastUsedFile = getLastUsedFile();
+			if (!lastUsedFile.isEmpty()) {
+				RemoveFileFromCache(lastUsedFile);
+			} else {
+				throw new InMemoryCacheException(
+						"Cache is full and all Files are pinned. Unpin some files for cache eviction before new files can be added. ");
+			}
 		}
 
+		log.info("Adding file " +filename +" to cache");
+		File file = new File(filename);
+		try {
+			file.readContent();
+		} catch (FileTooBigException e) {
+			throw e;
+		} catch (IOException e) {
+			throw e;
+		}
+		fileMap.put(filename, file);
+		log.info("Added file " +filename +" to cache");
+	}
+
+	private String getLastUsedFile() {
+		// TODO:Improve this algo. Use heap
+		File rvFile = null;
+		boolean first = true;
+		for (File file : fileMap.values()) {
+			if (!file.getIsPinned()) {
+				if (first) {
+					first = false;
+					rvFile = file;
+				}
+
+				if (rvFile.getLastAccessedTime().isBefore(file.getLastAccessedTime())) {
+					rvFile = file;
+				}
+			}
+		}
+
+		if (rvFile != null)
+			return rvFile.getFilename();
+
+		return "";
 	}
 
 	@Override
@@ -53,16 +95,20 @@ public class FileCacheImpl extends FileCache {
 
 	@Override
 	ByteBuffer fileData(String fileName) throws Exception {
-		try {
-			fileMap.get(fileName).readContent();
-		} catch (Exception e) {
-			throw e;
+		if(!fileMap.containsKey(fileName))
+		{
+			throw new InMemoryCacheException("File "+fileName+" not present in the cache");
 		}
 		return fileMap.get(fileName).getBytes();
 	}
 
 	@Override
-	ByteBuffer mutableFileData(String fileName) {
+	ByteBuffer mutableFileData(String fileName) throws InMemoryCacheException {
+		if(!fileMap.containsKey(fileName))
+		{
+			throw new InMemoryCacheException("File "+fileName+" not present in the cache");
+		}
+		
 		fileMap.get(fileName).setIsDirty(true);
 		return fileMap.get(fileName).getBytes();
 	}

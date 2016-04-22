@@ -107,7 +107,9 @@ public class File {
 	}
 
 	synchronized public void setBytes(ByteBuffer bytes) {
-		this.lastModifiedTime = LocalDateTime.now();
+		LocalDateTime now= LocalDateTime.now();;
+		this.lastModifiedTime = now;
+		this.lastAccessedTime =now;
 		this.filebytes = bytes;
 	}
 

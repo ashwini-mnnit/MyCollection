@@ -1,6 +1,6 @@
 package com.cache;
 
-public class FileTooBigException extends Exception {
+public class FileTooBigException extends InMemoryCacheException {
 
 	/**
 	 * 
@@ -12,7 +12,8 @@ public class FileTooBigException extends Exception {
 		this.filename = file;
 	}
 
-	public String message() {
+	@Override
+	public String getMessage() {
 		return filename + ": File size is exceeds the MAX_FILE_SIZE limit ";
 	}
 
