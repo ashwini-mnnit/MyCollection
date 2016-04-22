@@ -12,9 +12,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class File {
-	
-	private static Logger log = Logger.getLogger(File.class.getName());
-	
+
+	private Logger log;
+
 	private final UUID id;
 
 	private Boolean isPinned;
@@ -31,7 +31,9 @@ public class File {
 
 	// TODO: implementation of the storage.
 
-	public File(String filename) {
+	public File(String filename) throws SecurityException, IOException {
+		log = Utils.GetLogger(File.class.getName());
+
 		id = UUID.randomUUID();
 		this.isPinned = false;
 		this.filename = filename;
@@ -64,7 +66,7 @@ public class File {
 			if (dis != null)
 				Utils.CloseStreamIgnoreException(dis);
 		}
-		
+
 		this.filebytes = ByteBuffer.wrap(bytes);
 		log.log(Level.INFO, "Read complete :: " + filename);
 	}
@@ -77,12 +79,12 @@ public class File {
 			bs = new BufferedOutputStream(fs);
 			bs.write(filebytes.array());
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.severe("Unable to flush the content of the file: " + filename);
 		} finally {
 			if (bs != null)
 				Utils.CloseStreamIgnoreException(bs);
 		}
-
+		log.info("Flushed the content of file:" + filename + " to the disk");
 	}
 
 	public Boolean getIsPinned() {
