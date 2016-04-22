@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 public class File {
 
-	private Logger log;
+	private Logger log=Utils.GetLogger(File.class.getName());
 
 	private final UUID id;
 
@@ -31,9 +31,7 @@ public class File {
 
 	// TODO: implementation of the storage.
 
-	public File(String filename) throws SecurityException, IOException {
-		log = Utils.GetLogger(File.class.getName());
-
+	public File(String filename){
 		id = UUID.randomUUID();
 		this.isPinned = false;
 		this.filename = filename;

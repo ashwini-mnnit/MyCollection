@@ -18,10 +18,19 @@ public class Utils {
 		}
 	}
 	
-	public final static Logger GetLogger(String fileName) throws SecurityException, IOException
+	public final static Logger GetLogger(String fileName)
 	{
 		Logger logger;
-		Handler fileHandler = new FileHandler("InMemoryFileCache.log");
+		Handler fileHandler= null;
+		try {
+			fileHandler = new FileHandler("InMemoryFileCache.log");
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		logger=Logger.getLogger(fileName);
 		logger.addHandler(fileHandler);
 		return logger;

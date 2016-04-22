@@ -7,8 +7,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+//TODO: Add logger
 public class FileCacheImpl extends FileCache {
-	public static final int MAX_FILE_SIZE = 10240; //in KB
+	public static final int MAX_FILE_SIZE = 10240; // in KB
 	public static final int CACHE_SIZE = 100; // Number of files.
 	private Map<String, File> fileMap = new HashMap<String, File>();
 
@@ -47,9 +48,7 @@ public class FileCacheImpl extends FileCache {
 		for (Iterator<String> it = fileNames.iterator(); it.hasNext();) {
 			String filename = (String) it.next();
 			fileMap.get(filename).setIsPinned(false);
-
 		}
-
 	}
 
 	@Override
@@ -70,9 +69,9 @@ public class FileCacheImpl extends FileCache {
 
 	@Override
 	void shutdown() {
-		// TODO Auto-generated method stub
-		// TODO; flush all pinned files
-
+		for (File file : fileMap.values()) {
+			file.flushContent();
+		}
 	}
 
 	public Map<String, File> getFileMap() {

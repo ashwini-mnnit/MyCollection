@@ -61,7 +61,7 @@ protected FileCache(final int maxCacheEntries) {
 // the requested files cannot be pinned due to the cache being full. However,
 // note that entries in 'fileNames' may already be pinned and therefore even
 // a full cache may add additional pins to files.
-abstract void pinFiles(Collection<String> fileNames);
+abstract void pinFiles(Collection<String> fileNames) ;
 
 // Unpin one or more files that were previously pinned. It is ok to unpin
 // only a subset of the files that were previously pinned using pinFiles().
