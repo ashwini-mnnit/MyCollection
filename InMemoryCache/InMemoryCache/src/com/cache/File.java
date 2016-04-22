@@ -6,69 +6,81 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class File {
-	private final int id;
+	
+	private static Logger log = Logger.getLogger(File.class.getName());
+	
+	private final UUID id;
+
 	private Boolean isPinned;
+	private Boolean isDirty;
+
+	// File
 	private String filename;
 	private ByteBuffer filebytes;
-	private Boolean isDirty;
-	private Date createTime;
-	private Date lastModifiedTime;
+
+	// Timestamp
+	private LocalDateTime createTime;
+	private LocalDateTime lastModifiedTime;
+	private LocalDateTime lastAccessedTime;
+
+	// TODO: implementation of the storage.
 
 	public File(String filename) {
+		id = UUID.randomUUID();
 		this.isPinned = false;
 		this.filename = filename;
 		this.filebytes = null;
-		this.createTime= new Date(); 
-		this.lastModifiedTime= new Date();
+		LocalDateTime now = LocalDateTime.now();
+		this.createTime = now;
+		this.lastModifiedTime = now;
 	}
 
 	public void readContent() throws FileTooBigException, IOException {
 		byte[] bytes;
+		DataInputStream dis = null;
 		try {
 			java.io.File file = new java.io.File(this.filename);
 
+			// Check the max allowed size
 			if (file.length() > FileCacheImpl.MAX_FILE_SIZE) {
 				throw new FileTooBigException(this.filename);
 			}
+
+			// Read file
 			bytes = new byte[(int) file.length()];
-			DataInputStream dis = new DataInputStream(new FileInputStream(file));
+			dis = new DataInputStream(new FileInputStream(file));
 			dis.readFully(bytes);
-			try {
-				if (dis != null)
-					dis.close();
-			} catch (IOException e) {
-				throw e;
-			}
+
 		} catch (IOException e) {
+			log.log(Level.SEVERE, "Fail to read the file :: " + filename);
 			throw e;
+		} finally {
+			if (dis != null)
+				Utils.CloseStreamIgnoreException(dis);
 		}
 		
-		this.filebytes=ByteBuffer.wrap(bytes);
+		this.filebytes = ByteBuffer.wrap(bytes);
+		log.log(Level.INFO, "Read complete :: " + filename);
 	}
 
 	public void flushContent() {
 		BufferedOutputStream bs = null;
-
 		try {
 
-			FileOutputStream fs = new FileOutputStream(new java.io.File(
-					this.filename));
+			FileOutputStream fs = new FileOutputStream(new java.io.File(this.filename));
 			bs = new BufferedOutputStream(fs);
 			bs.write(filebytes.array());
-
 		} catch (Exception e) {
-
 			e.printStackTrace();
 		} finally {
 			if (bs != null)
-				try {
-					bs.close();
-				} catch (Exception e) {
-				}
+				Utils.CloseStreamIgnoreException(bs);
 		}
 
 	}
@@ -81,44 +93,58 @@ public class File {
 		this.isPinned = isPinned;
 	}
 
-	public String getFilename() {
+	synchronized public String getFilename() {
 		return filename;
 	}
 
-	public void setFilename(String filename) {
+	synchronized public void setFilename(String filename) {
 		this.filename = filename;
 	}
 
-	public ByteBuffer getBytes() {
+	synchronized public ByteBuffer getBytes() {
+		this.lastAccessedTime = LocalDateTime.now();
 		return filebytes;
 	}
 
-	public void setBytes(ByteBuffer bytes) {
+	synchronized public void setBytes(ByteBuffer bytes) {
+		this.lastModifiedTime = LocalDateTime.now();
 		this.filebytes = bytes;
 	}
 
-	public Boolean getIsDirty() {
+	synchronized public Boolean getIsDirty() {
 		return isDirty;
 	}
 
-	public void setIsDirty(Boolean isDirty) {
+	synchronized public void setIsDirty(Boolean isDirty) {
 		this.isDirty = isDirty;
 	}
 
-	public Date getCreateTime() {
+	synchronized public LocalDateTime getCreateTime() {
 		return createTime;
 	}
 
-	public void setCreateTime(Date createTime) {
+	synchronized public void setCreateTime(LocalDateTime createTime) {
 		this.createTime = createTime;
 	}
 
-	public Date getLastModifiedTime() {
+	synchronized public LocalDateTime getLastModifiedTime() {
 		return lastModifiedTime;
 	}
 
-	public void setLastModifiedTime(Date lastModifiedTime) {
+	synchronized public void setLastModifiedTime(LocalDateTime lastModifiedTime) {
 		this.lastModifiedTime = lastModifiedTime;
+	}
+
+	synchronized public LocalDateTime getLastAccessedTime() {
+		return lastAccessedTime;
+	}
+
+	synchronized public void setLastAccessedTime(LocalDateTime lastAccessedTime) {
+		this.lastAccessedTime = lastAccessedTime;
+	}
+
+	public UUID getId() {
+		return id;
 	}
 
 }
