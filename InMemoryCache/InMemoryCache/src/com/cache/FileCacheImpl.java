@@ -67,7 +67,7 @@ public class FileCacheImpl extends FileCache {
 		File rvFile = null;
 		boolean first = true;
 		for (File file : fileMap.values()) {
-			if (!file.getIsPinned()) {
+			if (!file.canEvict()) {
 				if (first) {
 					first = false;
 					rvFile = file;

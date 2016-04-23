@@ -149,4 +149,8 @@ public class File {
 		return id;
 	}
 
+	public boolean canEvict() {
+		return !isDirty && !isPinned;
+	}
+
 }
