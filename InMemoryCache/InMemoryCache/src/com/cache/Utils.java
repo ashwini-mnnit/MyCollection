@@ -2,6 +2,9 @@ package com.cache;
 
 import java.io.FilterInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.FileHandler;
@@ -50,5 +53,23 @@ public class Utils {
 		return rv;
 	}
 	
+	public final static String CreateHash(byte[] input)  {
+		String hexStr = "";
+		MessageDigest md;
+		try {
+			md = MessageDigest.getInstance("SHA1");
+			md.reset();
+			md.update(input);
+			byte[] digest = md.digest();
+			
+			for (int i = 0; i < digest.length; i++) {
+				hexStr += Integer.toString((digest[i] & 0xff) + 0x100, 16).substring(1);
+			}
+		} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		}
+		return hexStr;
+	}
 	
 }

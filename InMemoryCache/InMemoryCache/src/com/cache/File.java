@@ -52,6 +52,7 @@ public class File {
 				throw new FileTooBigException(this.filename);
 			}
 
+			int blockRequired = GetBlockCount(file.length());
 			// Read file
 			bytes = new byte[(int) file.length()];
 			dis = new DataInputStream(new FileInputStream(file));
@@ -67,6 +68,10 @@ public class File {
 
 		this.filebytes = ByteBuffer.wrap(bytes);
 		log.log(Level.INFO, "Read complete :: " + filename);
+	}
+
+	private int GetBlockCount(long length) {
+		return (int) (length/1024 + (length%1024==0?0:1)) ;
 	}
 
 	public void flushContent() {

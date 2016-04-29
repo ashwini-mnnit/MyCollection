@@ -3,4 +3,7 @@
 - Chuncking the file
 - DeDuplication
 - Logging - Done
-- Multithreading 
+- Multithreading  (thread Safe singolton http://www.javacoffeebreak.com/articles/designpatterns/)
+- Design Exception hadling
+- check for DBCC
+- Argument check
