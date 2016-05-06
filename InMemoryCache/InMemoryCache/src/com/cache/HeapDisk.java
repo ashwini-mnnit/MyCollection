@@ -5,7 +5,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 /**
- * This is in virtual In-memory storage disk to store file content. Singolton as the system supports only one copy of disk.
+ * This is in virtual In-memory storage disk to store file content. Singleton as the system supports only one copy of disk.
  * 
  * @author Ashwini Singh
  *

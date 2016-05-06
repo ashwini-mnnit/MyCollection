@@ -14,6 +14,12 @@ public class BlockStore {
 		this.block = new byte[1024]; // 1KB pages :TODO make it configurable.
 	}
 
+	public BlockStore(byte [] block) {
+		super();
+		this.blockId = UUID.randomUUID();
+		setStore(block);
+	}
+	
 	public BlockStore() {
 		super();
 		this.blockId = UUID.randomUUID();
@@ -26,10 +32,6 @@ public class BlockStore {
 
 	public UUID getBlockID() {
 		return blockId;
-	}
-
-	public synchronized byte[] getStore() {
-		return block;
 	}
 
 	public synchronized void setStore(byte[] block) {

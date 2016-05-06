@@ -2,8 +2,13 @@
 - Implement Unit test
 - Chuncking the file
 - DeDuplication
-- Logging - Done
+-
 - Multithreading  (thread Safe singolton http://www.javacoffeebreak.com/articles/designpatterns/)
 - Design Exception hadling
 - check for DBCC
 - Argument check
+-- Adding config
+
+Done
+-------------------
+ Logging - Done

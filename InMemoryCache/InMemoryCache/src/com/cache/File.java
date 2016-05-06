@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,7 +25,8 @@ public class File {
 	// File
 	private String filename;
 	private ByteBuffer filebytes;
-
+	private List<UUID> diskBlockIds;
+	
 	// Timestamp
 	private LocalDateTime createTime;
 	private LocalDateTime lastModifiedTime;
@@ -39,10 +42,10 @@ public class File {
 		LocalDateTime now = LocalDateTime.now();
 		this.createTime = now;
 		this.lastModifiedTime = now;
+		this.diskBlockIds = new ArrayList<UUID>();
 	}
 
 	public void readContent() throws FileTooBigException, IOException {
-		byte[] bytes;
 		DataInputStream dis = null;
 		try {
 			java.io.File file = new java.io.File(this.filename);
@@ -51,12 +54,20 @@ public class File {
 			if (file.length() > FileCacheImpl.MAX_FILE_SIZE) {
 				throw new FileTooBigException(this.filename);
 			}
-
-			int blockRequired = GetBlockCount(file.length());
-			// Read file
-			bytes = new byte[(int) file.length()];
 			dis = new DataInputStream(new FileInputStream(file));
-			dis.readFully(bytes);
+			
+			int blockRequired = GetBlockCount(file.length());
+			HeapDisk disk =  HeapDisk.getInstance();
+			
+			//Add block to the file. Preallocated and filled in later  
+			for(int i= 0; i<blockRequired;i++)
+			{
+				byte [] rbyte = new byte[1024]; 
+				dis.read(rbyte);
+				BlockStore block = new BlockStore(rbyte);
+				disk.AddBlockToDisk(block);
+				this.diskBlockIds.add(block.getBlockID());
+			}
 
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "Fail to read the file :: " + filename);
@@ -65,8 +76,6 @@ public class File {
 			if (dis != null)
 				Utils.CloseStreamIgnoreException(dis);
 		}
-
-		this.filebytes = ByteBuffer.wrap(bytes);
 		log.log(Level.INFO, "Read complete :: " + filename);
 	}
 
