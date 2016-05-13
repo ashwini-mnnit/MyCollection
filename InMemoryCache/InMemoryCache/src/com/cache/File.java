@@ -33,7 +33,10 @@ public class File {
 	private LocalDateTime lastAccessedTime;
 
 	// TODO: implementation of the storage.
-
+	/**
+	 * Constructor
+	 * @param filename
+	 */
 	public File(String filename){
 		id = UUID.randomUUID();
 		this.isPinned = false;
@@ -45,6 +48,11 @@ public class File {
 		this.diskBlockIds = new ArrayList<UUID>();
 	}
 
+	/**
+	 *  Read the content of the File.
+	 * @throws FileTooBigException
+	 * @throws IOException
+	 */
 	public void readContent() throws FileTooBigException, IOException {
 		DataInputStream dis = null;
 		try {
@@ -83,6 +91,9 @@ public class File {
 		return (int) (length/1024 + (length%1024==0?0:1)) ;
 	}
 
+	/**
+	 * Flushes the content of the file to disk.
+	 */
 	public void flushContent() {
 		BufferedOutputStream bs = null;
 		try {
