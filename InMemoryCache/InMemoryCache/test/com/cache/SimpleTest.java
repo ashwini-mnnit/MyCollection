@@ -4,6 +4,9 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import com.cache.exception.InMemoryCacheException;
+import com.cache.util.Utils;
+
 public class SimpleTest {
 
 	public static final String TestFileDir = "TestFiles";

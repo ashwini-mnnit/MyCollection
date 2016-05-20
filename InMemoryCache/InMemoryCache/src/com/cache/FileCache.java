@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
+import com.cache.exception.InMemoryCacheException;
+
 public abstract class FileCache {
 // Maximum number of files that can be cached at any time.
 protected final int maxCacheEntries;
@@ -70,8 +72,6 @@ abstract void unpinFiles(Collection<String> fileNames);
 
 // Provide read-only access to a pinned file's data in the cache. This call
 // should never block (other than temporarily while contending on a lock).
-//
-// It is undefined behavior if the file is not pinned, or to access the
 // buffer when the file isn't pinned.
 abstract ByteBuffer fileData(String fileName) throws IOException, FileTooBigException, Exception;
 

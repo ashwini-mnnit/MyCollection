@@ -13,9 +13,13 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class File {
+import com.cache.storage.BlockStore;
+import com.cache.storage.HeapDisk;
+import com.cache.util.Utils;
 
-	private Logger log=Utils.GetLogger(File.class.getName());
+public class CacheFile {
+
+	private Logger log=Utils.GetLogger(CacheFile.class.getName());
 
 	private final UUID id;
 
@@ -37,7 +41,7 @@ public class File {
 	 * Constructor
 	 * @param filename
 	 */
-	public File(String filename){
+	public CacheFile(String filename){
 		id = UUID.randomUUID();
 		this.isPinned = false;
 		this.filename = filename;

@@ -9,11 +9,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.cache.exception.InMemoryCacheException;
+import com.cache.util.Utils;
+
 //TODO: Add logger
 public class FileCacheImpl extends FileCache {
-	private Logger log = Utils.GetLogger(File.class.getName());
+	private Logger log = Utils.GetLogger(CacheFile.class.getName());
 	public static final int MAX_FILE_SIZE = 10240; // in KB
-	private Map<String, File> fileMap = new HashMap<String, File>();
+	private Map<String, CacheFile> fileMap = new HashMap<String, CacheFile>();
 
 	protected FileCacheImpl(int maxCacheEntries) {
 		super(maxCacheEntries);
@@ -50,7 +53,7 @@ public class FileCacheImpl extends FileCache {
 		}
 
 		log.info("Adding file " +filename +" to cache");
-		File file = new File(filename);
+		CacheFile file = new CacheFile(filename);
 		try {
 			file.readContent();
 		} catch (FileTooBigException e) {
@@ -64,9 +67,9 @@ public class FileCacheImpl extends FileCache {
 
 	private String getLastUsedFile() {
 		// TODO:Improve this algo. Use heap
-		File rvFile = null;
+		CacheFile rvFile = null;
 		boolean first = true;
-		for (File file : fileMap.values()) {
+		for (CacheFile file : fileMap.values()) {
 			if (!file.canEvict()) {
 				if (first) {
 					first = false;
@@ -115,16 +118,16 @@ public class FileCacheImpl extends FileCache {
 
 	@Override
 	void shutdown() {
-		for (File file : fileMap.values()) {
+		for (CacheFile file : fileMap.values()) {
 			file.flushContent();
 		}
 	}
 
-	public Map<String, File> getFileMap() {
+	public Map<String, CacheFile> getFileMap() {
 		return fileMap;
 	}
 
-	public void setFileMap(Map<String, File> fileMap) {
+	public void setFileMap(Map<String, CacheFile> fileMap) {
 		this.fileMap = fileMap;
 	}
 

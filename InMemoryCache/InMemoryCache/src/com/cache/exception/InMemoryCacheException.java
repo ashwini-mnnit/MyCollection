@@ -1,4 +1,4 @@
-package com.cache;
+package com.cache.exception;
 
 public class InMemoryCacheException extends Exception {
 

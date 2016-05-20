@@ -1,4 +1,4 @@
-package com.cache;
+package com.cache.util;
 
 import java.io.FilterInputStream;
 import java.io.IOException;
