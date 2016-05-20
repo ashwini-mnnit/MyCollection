@@ -31,17 +31,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
+import com.cache.exception.FileTooBigException;
 import com.cache.exception.InMemoryCacheException;
 
-public abstract class FileCache {
-// Maximum number of files that can be cached at any time.
-protected final int maxCacheEntries;
-
-// Constructor. 'maxCacheEntries' is the maximum number of files that can
-// be cached at any time.
-protected FileCache(final int maxCacheEntries) {
- this.maxCacheEntries = maxCacheEntries;
-}
+public interface IMemoryCache {
 
 // Pins the given files in vector 'fileNames' in the cache. If any of these
 // files are not already cached, they are first read from the local
@@ -63,17 +56,17 @@ protected FileCache(final int maxCacheEntries) {
 // the requested files cannot be pinned due to the cache being full. However,
 // note that entries in 'fileNames' may already be pinned and therefore even
 // a full cache may add additional pins to files.
-abstract void pinFiles(Collection<String> fileNames) throws IOException, InMemoryCacheException ;
+void pinFiles(Collection<String> fileNames) throws IOException, InMemoryCacheException ;
 
 // Unpin one or more files that were previously pinned. It is ok to unpin
 // only a subset of the files that were previously pinned using pinFiles().
 // It is undefined behavior to unpin a file that wasn't pinned.
-abstract void unpinFiles(Collection<String> fileNames);
+void unpinFiles(Collection<String> fileNames);
 
 // Provide read-only access to a pinned file's data in the cache. This call
 // should never block (other than temporarily while contending on a lock).
 // buffer when the file isn't pinned.
-abstract ByteBuffer fileData(String fileName) throws IOException, FileTooBigException, Exception;
+ByteBuffer fileData(String fileName) throws IOException, FileTooBigException, Exception;
 
 // Provide write access to a pinned file's data in the cache. This call marks
 // the file's data as 'dirty'. The caller may update the contents of the file
@@ -86,9 +79,9 @@ abstract ByteBuffer fileData(String fileName) throws IOException, FileTooBigExce
 //
 // It is undefined behavior if the file is not pinned, or to access the
 // buffer when the file is not pinned.
-abstract ByteBuffer mutableFileData(String fileName) throws InMemoryCacheException;
+ByteBuffer mutableFileData(String fileName) throws InMemoryCacheException;
 
 // Flushes all dirty buffers. This must be called before removing all
 // references. The cache cannot be used after it has been shut down.
-abstract void shutdown();
+void shutdown();
 }

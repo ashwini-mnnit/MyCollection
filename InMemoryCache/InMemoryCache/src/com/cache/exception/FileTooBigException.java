@@ -1,6 +1,4 @@
-package com.cache;
-
-import com.cache.exception.InMemoryCacheException;
+package com.cache.exception;
 
 public class FileTooBigException extends InMemoryCacheException {
 

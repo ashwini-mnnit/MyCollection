@@ -9,20 +9,24 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.cache.exception.FileTooBigException;
 import com.cache.exception.InMemoryCacheException;
 import com.cache.util.Utils;
 
 //TODO: Add logger
-public class FileCacheImpl extends FileCache {
+public class MemoryCache implements IMemoryCache {
 	private Logger log = Utils.GetLogger(CacheFile.class.getName());
 	public static final int MAX_FILE_SIZE = 10240; // in KB
 	private Map<String, CacheFile> fileMap = new HashMap<String, CacheFile>();
+	// Maximum number of files that can be cached at any time.
+	private final int maxCacheEntries;
 
-	protected FileCacheImpl(int maxCacheEntries) {
-		super(maxCacheEntries);
+	protected MemoryCache(int maxCacheEntries) {
+		this.maxCacheEntries = maxCacheEntries;
 	}
 
 	@Override
+	public
 	void pinFiles(Collection<String> fileNames) throws IOException, InMemoryCacheException {
 		for (Iterator<String> it = fileNames.iterator(); it.hasNext();) {
 			String filename = (String) it.next();

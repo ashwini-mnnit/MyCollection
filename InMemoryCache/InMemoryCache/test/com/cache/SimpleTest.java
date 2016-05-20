@@ -12,7 +12,7 @@ public class SimpleTest {
 	public static final String TestFileDir = "TestFiles";
 	@Test
 	public void test() {
-		FileCache cache = new FileCacheImpl(10);		
+		IMemoryCache cache = new MemoryCache(10);		
 		try {
 			cache.pinFiles(Utils.GetFilesFromDir(TestFileDir));
 		} catch (IOException e) {

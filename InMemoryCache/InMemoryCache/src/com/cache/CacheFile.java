@@ -13,6 +13,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.cache.exception.FileTooBigException;
 import com.cache.storage.BlockStore;
 import com.cache.storage.HeapDisk;
 import com.cache.util.Utils;
@@ -63,7 +64,7 @@ public class CacheFile {
 			java.io.File file = new java.io.File(this.filename);
 
 			// Check the max allowed size
-			if (file.length() > FileCacheImpl.MAX_FILE_SIZE) {
+			if (file.length() > MemoryCache.MAX_FILE_SIZE) {
 				throw new FileTooBigException(this.filename);
 			}
 			dis = new DataInputStream(new FileInputStream(file));
